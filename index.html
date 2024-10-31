@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天气查询小组件</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #weather-widget {
+            background-color: #fff;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        #weather-widget h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #weather-widget input[type="text"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #weather-widget button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #weather-widget button:hover {
+            background-color: #0056b3;
+        }
+
+        #weather-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .weather-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .weather-data {
+            font-size: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="weather-widget">
+        <h1>天气查询</h1>
+        <input type="text" id="city-input" placeholder="请输入城市名称">
+        <button onclick="fetchWeather()">查询天气</button>
+        <div id="weather-info">
+            <!-- Weather info will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        function fetchWeather() {
+            var city = document.getElementById('city-input').value;
+            var apiKey = '6faf270fa8e5d701f5425956898d904a'; // 替换为你的API密钥
+            var url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=zh_cn`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cod === "404") {
+                        document.getElementById('weather-info').innerHTML = "<p>城市未找到，请重新输入。</p>";
+                    } else {
+                        var weatherDescription = data.weather[0].description;
+                        var temperature = data.main.temp;
+                        var iconCode = data.weather[0].icon;
+                        var iconUrl = `http://openweathermap.org/img/wn/${iconCode}.png`;
+                        var weatherInfoHtml = `
+          <div class="weather-icon">
+            <img src="${iconUrl}" alt="Weather Icon">
+          </div>
+          <div class="weather-data">
+            <p>天气：${weatherDescription}</p>
+            <p>温度：${temperature}°C</p>
+          </div>
+        `;
+                        document.getElementById('weather-info').innerHTML = weatherInfoHtml;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('weather-info').innerHTML = "<p>查询失败，请稍后再试。</p>";
+                });
+        }
+    </script>
+
+</body>
+
+</html>
